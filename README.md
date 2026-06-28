@@ -39,7 +39,8 @@ quickbite-food-delivery-api/
 │   ├── ER_Diagram.pdf              # Entity-Relationship diagram
 │   ├── Relational_Schema.pdf       # Relational table schema
 │   ├── BCNF_Proof.pdf              # BCNF normalization proof
-│   └── sample_inserts.sql          # Sample SQL INSERT statements
+│   ├── sample_inserts.sql          # Sample SQL INSERT statements (23 tables)
+│   └── queries.sql                 # SQL queries — JOINs, aggregations, subqueries
 ├── src/
 │   ├── server.js               # Entry point — HTTP server + graceful shutdown
 │   ├── app.js                  # Express app factory — middleware, routes, error handling
