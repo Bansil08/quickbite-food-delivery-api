@@ -14,6 +14,7 @@ The database is fully **BCNF-normalized**. All design documents are in the [`doc
 | [Relational_Schema.pdf](./docs/Relational_Schema.pdf) | Final relational table schema derived from the ER diagram |
 | [BCNF_Proof.pdf](./docs/BCNF_Proof.pdf) | Formal proof that all relations satisfy Boyce-Codd Normal Form |
 | [sample_inserts.sql](./docs/sample_inserts.sql) | 301-line SQL script — seeds all 23 tables (Users, Restaurants, Menu, Orders, Cart, Payment, Delivery, Wallet, Refund, Complaints, Cancellations) with 10 rows each |
+| [queries.sql](./docs/queries.sql) | SQL queries — JOINs, aggregations, subqueries, and analytical queries on the Quick-Bite schema |
 
 ---
 
