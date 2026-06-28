@@ -13,7 +13,7 @@ The database is fully **BCNF-normalized**. All design documents are in the [`doc
 | [ER_Diagram.pdf](./docs/ER_Diagram.pdf) | Entity-Relationship diagram — all entities, attributes, and relationships |
 | [Relational_Schema.pdf](./docs/Relational_Schema.pdf) | Final relational table schema derived from the ER diagram |
 | [BCNF_Proof.pdf](./docs/BCNF_Proof.pdf) | Formal proof that all relations satisfy Boyce-Codd Normal Form |
-| [sample_inserts.sql](./docs/sample_inserts.sql) | Sample SQL INSERT statements for testing |
+| [sample_inserts.sql](./docs/sample_inserts.sql) | 301-line SQL script — seeds all 23 tables (Users, Restaurants, Menu, Orders, Cart, Payment, Delivery, Wallet, Refund, Complaints, Cancellations) with 10 rows each |
 
 ---
 
