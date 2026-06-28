@@ -15,6 +15,10 @@ The database is fully **BCNF-normalized**. All design documents are in the [`doc
 | [BCNF_Proof.pdf](./docs/BCNF_Proof.pdf) | Formal proof that all relations satisfy Boyce-Codd Normal Form |
 | [sample_inserts.sql](./docs/sample_inserts.sql) | 301-line SQL script — seeds all 23 tables (Users, Restaurants, Menu, Orders, Cart, Payment, Delivery, Wallet, Refund, Complaints, Cancellations) with 10 rows each |
 | [queries.sql](./docs/queries.sql) | SQL queries — JOINs, aggregations, subqueries, and analytical queries on the Quick-Bite schema |
+| [01\_ddl.sql](./docs/01_ddl.sql) | Full DDL — CREATE TABLE for all 23 tables with CHECK, ENUM, FK constraints (MySQL 8.0) |
+| [02\_indexes.sql](./docs/02_indexes.sql) | Performance indexes on FK, filter, and sort columns across all tables |
+| [03\_views\_triggers.sql](./docs/03_views_triggers.sql) | Views (order summary, restaurant leaderboard, menu), triggers (rating sync, wallet), and `place_order` stored procedure |
+| [04\_security.sql](./docs/04_security.sql) | MySQL DB users with least-privilege GRANT/REVOKE — `qb_readonly`, `qb_app`, `qb_admin` |
 
 ---
 
@@ -39,8 +43,12 @@ quickbite-food-delivery-api/
 │   ├── ER_Diagram.pdf              # Entity-Relationship diagram
 │   ├── Relational_Schema.pdf       # Relational table schema
 │   ├── BCNF_Proof.pdf              # BCNF normalization proof
-│   ├── sample_inserts.sql          # Sample SQL INSERT statements (23 tables)
-│   └── queries.sql                 # SQL queries — JOINs, aggregations, subqueries
+│   ├── sample_inserts.sql          # Seed data — all 23 tables, 10 rows each
+│   ├── queries.sql                 # SQL queries — JOINs, aggregations, subqueries
+│   ├── 01_ddl.sql                  # Full DDL with constraints (MySQL 8.0)
+│   ├── 02_indexes.sql              # Performance indexes
+│   ├── 03_views_triggers.sql       # Views, triggers & place_order stored proc
+│   └── 04_security.sql             # MySQL users, GRANT/REVOKE
 ├── src/
 │   ├── server.js               # Entry point — HTTP server + graceful shutdown
 │   ├── app.js                  # Express app factory — middleware, routes, error handling
