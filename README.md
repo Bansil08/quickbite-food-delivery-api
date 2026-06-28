@@ -4,6 +4,19 @@ A production-ready **RESTful backend API** for a food delivery platform, built w
 
 ---
 
+## Database Design
+
+The database is fully **BCNF-normalized**. All design documents are in the [`docs/`](./docs/) folder:
+
+| Document | Description |
+|---|---|
+| [ER_Diagram.pdf](./docs/ER_Diagram.pdf) | Entity-Relationship diagram — all entities, attributes, and relationships |
+| [Relational_Schema.pdf](./docs/Relational_Schema.pdf) | Final relational table schema derived from the ER diagram |
+| [BCNF_Proof.pdf](./docs/BCNF_Proof.pdf) | Formal proof that all relations satisfy Boyce-Codd Normal Form |
+| [sample_inserts.sql](./docs/sample_inserts.sql) | Sample SQL INSERT statements for testing |
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -21,6 +34,11 @@ A production-ready **RESTful backend API** for a food delivery platform, built w
 
 ```
 quickbite-food-delivery-api/
+├── docs/
+│   ├── ER_Diagram.pdf              # Entity-Relationship diagram
+│   ├── Relational_Schema.pdf       # Relational table schema
+│   ├── BCNF_Proof.pdf              # BCNF normalization proof
+│   └── sample_inserts.sql          # Sample SQL INSERT statements
 ├── src/
 │   ├── server.js               # Entry point — HTTP server + graceful shutdown
 │   ├── app.js                  # Express app factory — middleware, routes, error handling
