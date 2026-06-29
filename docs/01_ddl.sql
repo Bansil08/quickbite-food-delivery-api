@@ -1,7 +1,3 @@
--- Quick-Bite MySQL DDL v1.0
--- 23 tables | BCNF | AUTO_INCREMENT PKs | CHECK + NOT NULL constraints
--- Engine: InnoDB (FK support) | Compatible: MySQL 8.0.16+
-
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS Cancellation;
@@ -30,7 +26,6 @@ DROP TABLE IF EXISTS Users;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
-
 CREATE TABLE Users (
     UserID      INT           NOT NULL AUTO_INCREMENT,
     User_Name   VARCHAR(100)  NOT NULL,
@@ -42,7 +37,6 @@ CREATE TABLE Users (
     PRIMARY KEY (UserID)
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE User_Address (
     Add_ID      INT           NOT NULL AUTO_INCREMENT,
     Add_line_1  VARCHAR(255)  NOT NULL,
@@ -53,7 +47,6 @@ CREATE TABLE User_Address (
     PRIMARY KEY (Add_ID)
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE User_Has_Address (
     Add_ID  INT NOT NULL,
     UserID  INT NOT NULL,
@@ -61,7 +54,6 @@ CREATE TABLE User_Has_Address (
     FOREIGN KEY (Add_ID) REFERENCES User_Address(Add_ID) ON DELETE CASCADE,
     FOREIGN KEY (UserID) REFERENCES Users(UserID)         ON DELETE CASCADE
 ) ENGINE=InnoDB;
-
 
 CREATE TABLE Restaurant (
     Restaurant_ID      INT           NOT NULL AUTO_INCREMENT,
@@ -76,7 +68,6 @@ CREATE TABLE Restaurant (
     CHECK (Close_Time > Open_Time)
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE Restaurant_Address (
     Add_ID        INT           NOT NULL AUTO_INCREMENT,
     Add_line_1    VARCHAR(255)  NOT NULL,
@@ -89,14 +80,12 @@ CREATE TABLE Restaurant_Address (
     FOREIGN KEY (Restaurant_ID) REFERENCES Restaurant(Restaurant_ID) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE Cuisine (
     Cuisine        VARCHAR(100) NOT NULL,
     Restaurant_ID  INT          NOT NULL,
     PRIMARY KEY (Cuisine, Restaurant_ID),
     FOREIGN KEY (Restaurant_ID) REFERENCES Restaurant(Restaurant_ID) ON DELETE CASCADE
 ) ENGINE=InnoDB;
-
 
 CREATE TABLE Menu_Category (
     Category_Name  VARCHAR(100) NOT NULL,
@@ -105,7 +94,6 @@ CREATE TABLE Menu_Category (
     PRIMARY KEY (Category_Name, Restaurant_ID),
     FOREIGN KEY (Restaurant_ID) REFERENCES Restaurant(Restaurant_ID) ON DELETE CASCADE
 ) ENGINE=InnoDB;
-
 
 CREATE TABLE Menu_Item (
     Item_ID           INT           NOT NULL AUTO_INCREMENT,
@@ -122,7 +110,6 @@ CREATE TABLE Menu_Item (
         ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE Review (
     Review_ID      INT    NOT NULL AUTO_INCREMENT,
     Review         TEXT   NOT NULL,
@@ -135,7 +122,6 @@ CREATE TABLE Review (
     FOREIGN KEY (UserID)        REFERENCES Users(UserID)              ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE Cart (
     Cart_ID     INT       NOT NULL AUTO_INCREMENT,
     Created_At  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -145,7 +131,6 @@ CREATE TABLE Cart (
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE Cart_Item (
     Item_ID  INT NOT NULL,
     Cart_ID  INT NOT NULL,
@@ -154,7 +139,6 @@ CREATE TABLE Cart_Item (
     FOREIGN KEY (Item_ID) REFERENCES Menu_Item(Item_ID) ON DELETE CASCADE,
     FOREIGN KEY (Cart_ID) REFERENCES Cart(Cart_ID)      ON DELETE CASCADE
 ) ENGINE=InnoDB;
-
 
 CREATE TABLE Orders (
     OrderID        INT       NOT NULL AUTO_INCREMENT,
@@ -169,7 +153,6 @@ CREATE TABLE Orders (
     FOREIGN KEY (Restaurant_ID) REFERENCES Restaurant(Restaurant_ID) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE Order_Item (
     Item_ID   INT NOT NULL,
     OrderID   INT NOT NULL,
@@ -179,7 +162,6 @@ CREATE TABLE Order_Item (
     FOREIGN KEY (Item_ID) REFERENCES Menu_Item(Item_ID) ON DELETE RESTRICT,
     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)    ON DELETE CASCADE
 ) ENGINE=InnoDB;
-
 
 CREATE TABLE Payment (
     Transaction_ID  INT           NOT NULL AUTO_INCREMENT,
@@ -193,7 +175,6 @@ CREATE TABLE Payment (
     FOREIGN KEY (Order_ID) REFERENCES Orders(OrderID) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE Delivery_Partner (
     Partner_ID  INT           NOT NULL AUTO_INCREMENT,
     Name        VARCHAR(100)  NOT NULL,
@@ -203,7 +184,6 @@ CREATE TABLE Delivery_Partner (
     Is_Active   BOOLEAN       NOT NULL DEFAULT TRUE,
     PRIMARY KEY (Partner_ID)
 ) ENGINE=InnoDB;
-
 
 CREATE TABLE Delivery (
     Delivery_ID    INT       NOT NULL AUTO_INCREMENT,
@@ -218,7 +198,6 @@ CREATE TABLE Delivery (
     FOREIGN KEY (Partner_ID) REFERENCES Delivery_Partner(Partner_ID) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE Wallet (
     Wallet_ID   INT           NOT NULL AUTO_INCREMENT,
     Balance     DECIMAL(10,2) NOT NULL DEFAULT 0.00 CHECK (Balance >= 0),
@@ -227,7 +206,6 @@ CREATE TABLE Wallet (
     PRIMARY KEY (Wallet_ID),
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
 ) ENGINE=InnoDB;
-
 
 CREATE TABLE Wallet_Transaction (
     Wallet_ID       INT           NOT NULL,
@@ -238,7 +216,6 @@ CREATE TABLE Wallet_Transaction (
     PRIMARY KEY (Transaction_ID),
     FOREIGN KEY (Wallet_ID) REFERENCES Wallet(Wallet_ID) ON DELETE CASCADE
 ) ENGINE=InnoDB;
-
 
 CREATE TABLE Wallet_TopUP (
     Transaction_ID   INT           NOT NULL,
@@ -252,7 +229,6 @@ CREATE TABLE Wallet_TopUP (
     FOREIGN KEY (Wallet_ID)      REFERENCES Wallet(Wallet_ID)                  ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE Discount (
     Discount_ID      INT           NOT NULL AUTO_INCREMENT,
     Discount_PR      FLOAT         NOT NULL CHECK (Discount_PR >= 0 AND Discount_PR <= 100),
@@ -261,7 +237,6 @@ CREATE TABLE Discount (
     PRIMARY KEY (Discount_ID),
     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE
 ) ENGINE=InnoDB;
-
 
 CREATE TABLE Complaint (
     Complaint_ID  INT       NOT NULL AUTO_INCREMENT,
@@ -276,7 +251,6 @@ CREATE TABLE Complaint (
     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE Refund (
     Refund_ID      INT           NOT NULL AUTO_INCREMENT,
     OrderID        INT           NOT NULL,
@@ -290,7 +264,6 @@ CREATE TABLE Refund (
     FOREIGN KEY (Complaint_ID) REFERENCES Complaint(Complaint_ID) ON DELETE RESTRICT,
     FOREIGN KEY (Wallet_ID)    REFERENCES Wallet(Wallet_ID)     ON DELETE RESTRICT
 ) ENGINE=InnoDB;
-
 
 CREATE TABLE Cancellation (
     Cancellation_ID      INT           NOT NULL AUTO_INCREMENT,

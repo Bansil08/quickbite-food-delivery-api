@@ -1,14 +1,4 @@
--- Quick-Bite — Views, Triggers & Stored Procedures (MySQL 8.0)
--- MySQL uses DELIMITER $$ for multi-statement blocks.
--- No native materialized views in MySQL — a summary table + CALL pattern is used instead.
-
 DELIMITER $$
-
-
--- =============================================================================
--- TRIGGER 1: Keep Restaurant.Rating in sync with Review inserts/updates/deletes
--- =============================================================================
--- Fires AFTER every write to Review and recomputes the restaurant's average rating.
 
 CREATE TRIGGER trg_update_restaurant_rating_insert
 AFTER INSERT ON Review
@@ -48,13 +38,6 @@ BEGIN
     WHERE Restaurant_ID = OLD.Restaurant_ID;
 END$$
 
-
--- =============================================================================
--- TRIGGER 2: Credit Wallet balance when a Refund is marked 'Completed'
--- =============================================================================
--- Fires AFTER an UPDATE on Refund and detects a status change → 'Completed'.
--- Adds the refund amount to the user's wallet balance and inserts a Credit transaction.
-
 CREATE TRIGGER trg_wallet_credit_on_refund
 AFTER UPDATE ON Refund
 FOR EACH ROW
@@ -68,13 +51,6 @@ BEGIN
         VALUES (NEW.Wallet_ID, 'Credit', NEW.Refund_Amount);
     END IF;
 END$$
-
-
--- =============================================================================
--- TRIGGER 3: Debit Wallet balance when a Wallet payment is made
--- =============================================================================
--- Fires AFTER Payment is inserted with Mode = 'Wallet'.
--- Ensures the wallet has sufficient balance before debiting.
 
 CREATE TRIGGER trg_wallet_debit_on_payment
 AFTER INSERT ON Payment
@@ -102,13 +78,6 @@ BEGIN
         VALUES (v_wallet_id, 'Debit', NEW.Amount);
     END IF;
 END$$
-
-
--- =============================================================================
--- VIEW: v_order_summary
--- =============================================================================
--- Full order detail for admin dashboards and the GET /api/orders endpoint.
--- Joins Orders with customer, restaurant, payment, delivery, and discount info.
 
 CREATE OR REPLACE VIEW v_order_summary AS
 SELECT
@@ -149,13 +118,6 @@ LEFT JOIN Delivery    d    ON o.OrderID       = d.OrderID
 LEFT JOIN Delivery_Partner dp ON d.Partner_ID = dp.Partner_ID
 LEFT JOIN Discount    disc ON o.OrderID       = disc.OrderID$$
 
-
--- =============================================================================
--- VIEW: v_restaurant_leaderboard
--- =============================================================================
--- Pre-joins restaurant stats: avg rating, total orders, total revenue.
--- Equivalent of a materialized view — refresh by querying this view.
-
 CREATE OR REPLACE VIEW v_restaurant_leaderboard AS
 SELECT
     r.Restaurant_ID,
@@ -177,12 +139,6 @@ LEFT JOIN Payment      p   ON o.OrderID       = p.Order_ID
 GROUP BY r.Restaurant_ID, r.Name, r.Rating, r.Restaurant_Status
 ORDER BY avg_rating DESC, total_orders DESC$$
 
-
--- =============================================================================
--- VIEW: v_menu_with_category
--- =============================================================================
--- Full menu for a restaurant with category type — used by GET /api/menu/:id.
-
 CREATE OR REPLACE VIEW v_menu_with_category AS
 SELECT
     mi.Item_ID,
@@ -198,19 +154,6 @@ FROM Menu_Item mi
 JOIN Menu_Category mc ON mi.Category_Name = mc.Category_Name
                      AND mi.Restaurant_ID  = mc.Restaurant_ID
 ORDER BY mi.Restaurant_ID, mi.Category_Name, mi.Item_Name$$
-
-
--- =============================================================================
--- STORED PROCEDURE: place_order
--- =============================================================================
--- Atomically creates an order from an active cart:
---   1. Validates the cart belongs to the user and is active.
---   2. Validates all items are available.
---   3. Inserts the parent Orders row.
---   4. Bulk-inserts all Order_Items from Cart_Items.
---   5. Marks the Cart as 'Checked Out'.
--- Returns the new OrderID via OUT parameter.
--- On any error, the transaction is rolled back automatically.
 
 CREATE PROCEDURE place_order(
     IN  p_user_id          INT,
@@ -232,7 +175,6 @@ BEGIN
 
     START TRANSACTION;
 
-    -- 1. Verify cart ownership and active status
     IF NOT EXISTS (
         SELECT 1 FROM Cart
         WHERE Cart_ID = p_cart_id AND UserID = p_user_id AND Status = 'Active'
@@ -241,7 +183,6 @@ BEGIN
             SET MESSAGE_TEXT = 'No active cart found for this user.';
     END IF;
 
-    -- 2. Check for unavailable items
     SELECT COUNT(*) INTO v_unavailable
     FROM Cart_Item ci
     JOIN Menu_Item mi ON ci.Item_ID = mi.Item_ID
@@ -252,7 +193,6 @@ BEGIN
             SET MESSAGE_TEXT = 'One or more cart items are currently unavailable.';
     END IF;
 
-    -- 3. Compute totals and restaurant
     SELECT
         SUM(mi.Price * ci.Quantity),
         MAX(mi.Restaurant_ID)
@@ -261,24 +201,20 @@ BEGIN
     JOIN Menu_Item mi ON ci.Item_ID = mi.Item_ID
     WHERE ci.Cart_ID = p_cart_id;
 
-    -- 4. Insert the parent Order
     INSERT INTO Orders (UserID, Restaurant_ID, Status, Total_Amount)
     VALUES (p_user_id, v_restaurant_id, 'pending', v_total);
 
     SET p_order_id = LAST_INSERT_ID();
 
-    -- 5. Bulk-insert Order_Items from Cart_Items
     INSERT INTO Order_Item (Item_ID, OrderID, Quantity, Unit_Price)
     SELECT ci.Item_ID, p_order_id, ci.Quantity, mi.Price
     FROM Cart_Item ci
     JOIN Menu_Item mi ON ci.Item_ID = mi.Item_ID
     WHERE ci.Cart_ID = p_cart_id;
 
-    -- 6. Mark cart as checked out
     UPDATE Cart SET Status = 'Checked Out' WHERE Cart_ID = p_cart_id;
 
     COMMIT;
 END$$
-
 
 DELIMITER ;
