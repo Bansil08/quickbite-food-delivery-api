@@ -1,0 +1,3 @@
+# Override GitHub Linguist — include SQL files in language stats
+docs/*.sql linguist-documentation=false
+docs/*.sql linguist-detectable=true
